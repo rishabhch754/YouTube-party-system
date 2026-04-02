@@ -10,8 +10,7 @@ const Home = () => {
   const [backendReady, setBackendReady] = useState(false);
   const navigate = useNavigate();
 
-  const API_URL = 'https://watch-party-system-0xyk.onrender.com';
-
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
   useEffect(() => {
     checkBackendStatus();
   }, []);
