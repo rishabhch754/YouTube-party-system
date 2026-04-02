@@ -1,5 +1,6 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "build",
-  "framework": "create-react-app"
+  "buildCommand": "cd watch-party-frontend && npm install && npm run build",
+  "outputDirectory": "watch-party-frontend/build",
+  "framework": "create-react-app",
+  "installCommand": "cd watch-party-frontend && npm install"
 }
