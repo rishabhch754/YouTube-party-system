@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
 
@@ -11,11 +11,8 @@ const Home = () => {
   const navigate = useNavigate();
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-  useEffect(() => {
-    checkBackendStatus();
-  }, []);
 
-  const checkBackendStatus = async () => {
+  const checkBackendStatus = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/api/rooms/test`);
       if (response.ok) {
@@ -27,7 +24,11 @@ const Home = () => {
       console.error('Backend not reachable:', error);
       setBackendReady(false);
     }
-  };
+  }, [API_URL]);
+
+  useEffect(() => {
+    checkBackendStatus();
+  }, [checkBackendStatus]);
 
   const createRoom = async () => {
     if (!username.trim()) {

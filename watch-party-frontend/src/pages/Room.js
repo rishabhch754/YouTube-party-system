@@ -133,7 +133,7 @@ const Room = () => {
         wsService.current.disconnect();
       }
     };
-  }, [roomId, userId, username, navigate, player]);
+  }, [roomId, userId, username, navigate, player, lastSyncTime]);  
 
   // Time update interval
   useEffect(() => {
@@ -198,8 +198,9 @@ const Room = () => {
     }
   };
 
+  
   const extractVideoId = (url) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
     return (match && match[2].length === 11) ? match[2] : null;
   };
@@ -360,40 +361,40 @@ const Room = () => {
 
         <div className="sidebar">
           <div className="participants-section">
-  <h3>Participants ({participants.length})</h3>
-  <ul>
-    {participants.map((p) => (
-      <li key={p.userId} className="participant-item">
-        <span className="participant-name">
-          {p.username}
-          {p.userId === userId && ' (You)'}
-        </span>
-        <span className={`role-badge role-${p.role.toLowerCase()}`}>
-          {p.role === 'HOST' && 'HOST'}
-          {p.role === 'MODERATOR' && 'MODERATOR'}
-          {p.role === 'PARTICIPANT' && 'PARTICIPANT'}
-        </span>
-        {userRole === 'HOST' && p.userId !== userId && (
-          <div className="participant-actions">
-            {p.role !== 'MODERATOR' && (
-              <button onClick={() => assignRole(p.userId, 'MODERATOR')}>
-                Make Moderator
-              </button>
-            )}
-            {p.role !== 'PARTICIPANT' && (
-              <button onClick={() => assignRole(p.userId, 'PARTICIPANT')}>
-                Demote
-              </button>
-            )}
-            <button onClick={() => removeParticipant(p.userId)}>
-              Remove
-            </button>
+            <h3>Participants ({participants.length})</h3>
+            <ul>
+              {participants.map((p) => (
+                <li key={p.userId} className="participant-item">
+                  <span className="participant-name">
+                    {p.username}
+                    {p.userId === userId && ' (You)'}
+                  </span>
+                  <span className={`role-badge role-${p.role.toLowerCase()}`}>
+                    {p.role === 'HOST' && 'HOST'}
+                    {p.role === 'MODERATOR' && 'MODERATOR'}
+                    {p.role === 'PARTICIPANT' && 'PARTICIPANT'}
+                  </span>
+                  {userRole === 'HOST' && p.userId !== userId && (
+                    <div className="participant-actions">
+                      {p.role !== 'MODERATOR' && (
+                        <button onClick={() => assignRole(p.userId, 'MODERATOR')}>
+                          Make Moderator
+                        </button>
+                      )}
+                      {p.role !== 'PARTICIPANT' && (
+                        <button onClick={() => assignRole(p.userId, 'PARTICIPANT')}>
+                          Demote
+                        </button>
+                      )}
+                      <button onClick={() => removeParticipant(p.userId)}>
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
           </div>
-        )}
-      </li>
-    ))}
-  </ul>
-</div>
 
           <div className="chat-section">
             <h3>Chat</h3>
