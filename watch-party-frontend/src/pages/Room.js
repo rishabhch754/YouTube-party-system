@@ -26,25 +26,24 @@ const Room = () => {
   const wsService = useRef(null);
   const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
-  // ✅ NEW: Fetch role from backend on page load/refresh
-  useEffect(() => {
+useEffect(() => {
     const fetchCurrentRole = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/api/rooms/${roomId}`);
-        const data = await response.json();
-        const currentUser = data.participants?.find(p => p.userId === userId);
-        if (currentUser && currentUser.role !== userRole) {
-          setUserRole(currentUser.role);
-          localStorage.setItem('role', currentUser.role);
-          console.log('✅ Role refreshed from backend:', currentUser.role);
+        try {
+            const response = await fetch(`${apiUrl}/api/rooms/${roomId}`);
+            const data = await response.json();
+            const currentUser = data.participants?.find(p => p.userId === userId);
+            if (currentUser && currentUser.role !== userRole) {
+                setUserRole(currentUser.role);
+                localStorage.setItem('role', currentUser.role);
+                console.log('✅ Role refreshed from backend:', currentUser.role);
+            }
+        } catch (error) {
+            console.error('Error fetching role:', error);
         }
-      } catch (error) {
-        console.error('Error fetching role:', error);
-      }
     };
     
     fetchCurrentRole();
-  }, [roomId, userId]);
+}, [roomId, userId, apiUrl, userRole]);  
 
   // WebSocket Connection Effect
   useEffect(() => {
