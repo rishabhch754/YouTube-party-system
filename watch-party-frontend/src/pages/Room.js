@@ -24,7 +24,29 @@ const Room = () => {
   const userId = localStorage.getItem('userId');
   const username = localStorage.getItem('username');
   const wsService = useRef(null);
+  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
+  // ✅ NEW: Fetch role from backend on page load/refresh
+  useEffect(() => {
+    const fetchCurrentRole = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/api/rooms/${roomId}`);
+        const data = await response.json();
+        const currentUser = data.participants?.find(p => p.userId === userId);
+        if (currentUser && currentUser.role !== userRole) {
+          setUserRole(currentUser.role);
+          localStorage.setItem('role', currentUser.role);
+          console.log('✅ Role refreshed from backend:', currentUser.role);
+        }
+      } catch (error) {
+        console.error('Error fetching role:', error);
+      }
+    };
+    
+    fetchCurrentRole();
+  }, [roomId, userId]);
+
+  // WebSocket Connection Effect
   useEffect(() => {
     if (!userId || !username) {
       navigate('/');
@@ -42,7 +64,6 @@ const Room = () => {
     
     wsService.current = new WebSocketService();
     wsService.current.connect(roomId, userId, username, {
-      // Play event
       onPlay: () => {
         if (player && player.playVideo && Date.now() - lastSyncTime > 500) {
           player.playVideo();
@@ -50,7 +71,6 @@ const Room = () => {
         }
       },
       
-      // Pause event
       onPause: () => {
         if (player && player.pauseVideo && Date.now() - lastSyncTime > 500) {
           player.pauseVideo();
@@ -58,7 +78,6 @@ const Room = () => {
         }
       },
       
-      // Seek event
       onSeek: (data) => {
         if (player && player.seekTo && Date.now() - lastSyncTime > 500) {
           player.seekTo(data.time, true);
@@ -67,7 +86,6 @@ const Room = () => {
         }
       },
       
-      // Video change event
       onVideoChange: (data) => {
         setCurrentVideoId(data.videoId);
         setCurrentTime(0);
@@ -76,16 +94,13 @@ const Room = () => {
         }
       },
       
-      // User joined event
       onUserJoined: (data) => {
         setParticipants(prev => {
           if (prev.find(p => p.userId === data.userId)) return prev;
           return [...prev, data];
         });
-       
       },
       
-      // User left event
       onUserLeft: (data) => {
         setParticipants(prev => prev.filter(p => p.userId !== data.userId));
       },
@@ -95,17 +110,16 @@ const Room = () => {
         setParticipants(data.participants);
       },
       
-      // Role assigned event
       onRoleAssigned: (data) => {
         setParticipants(prev => 
           prev.map(p => p.userId === data.userId ? {...p, role: data.role} : p)
         );
         if (data.userId === userId) {
           setUserRole(data.role);
+          localStorage.setItem('role', data.role);
         }
       },
       
-      // Participant removed event
       onParticipantRemoved: (data) => {
         if (data.userId === userId) {
           alert('You have been removed from the room by the host!');
@@ -115,14 +129,12 @@ const Room = () => {
         }
       },
       
-      // Chat message event
       onChat: (data) => {
         if (data.username && data.message) {
           addChatMessage(data.username, data.message);
         }
       },
       
-      // Error event
       onError: (error) => {
         console.error('WebSocket error:', error);
       }
@@ -133,7 +145,7 @@ const Room = () => {
         wsService.current.disconnect();
       }
     };
-  }, [roomId, userId, username, navigate, player, lastSyncTime]);  
+  }, [roomId, userId, username, navigate, player, lastSyncTime]);
 
   // Time update interval
   useEffect(() => {
@@ -198,7 +210,6 @@ const Room = () => {
     }
   };
 
-  
   const extractVideoId = (url) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
@@ -252,7 +263,7 @@ const Room = () => {
     }
   };
 
-  // YouTube Player Options
+  // ✅ UPDATED YouTube Player Options with origin
   const opts = {
     height: '450',
     width: '100%',
@@ -265,6 +276,7 @@ const Room = () => {
       disablekb: 1,
       fs: 0,
       iv_load_policy: 3,
+      origin: window.location.origin,  // ✅ ADD THIS LINE
     },
   };
 

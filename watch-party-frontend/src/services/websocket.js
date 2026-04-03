@@ -25,11 +25,11 @@ class WebSocketService {
       debug: (str) => {
         console.log('STOMP:', str);
       },
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
+      reconnectDelay: 10000,      
+      heartbeatIncoming: 10000,   
+      heartbeatOutgoing: 10000,   
       onConnect: () => {
-        console.log('✅ Connected to WebSocket');
+        console.log('Connected to WebSocket');
         this.isConnected = true;
         
         // Subscribe to room topics
@@ -87,7 +87,13 @@ class WebSocketService {
           callbacks.onChat && callbacks.onChat(data);
         });
         
-        // Subscribe to user-specific messages
+        
+        this.client.subscribe(`/topic/room/${roomId}/participants_update`, (msg) => {
+          const data = JSON.parse(msg.body);
+          console.log('Received PARTICIPANTS_UPDATE:', data);
+          callbacks.onParticipantsUpdate && callbacks.onParticipantsUpdate(data);
+        });
+        
         this.client.subscribe(`/user/queue/state`, (msg) => {
           const data = JSON.parse(msg.body);
           console.log('Received STATE:', data);
@@ -128,6 +134,7 @@ class WebSocketService {
     this.client.activate();
   }
 
+  
   sendPlay(roomId, userId) {
     if (this.client && this.isConnected) {
       this.client.publish({
