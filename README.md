@@ -70,3 +70,49 @@ Role-based access (Host, Moderator, Participant)
 Host can assign roles and remove participants
 Live chat
 Multiple users can watch together
+
+How to Use the Application
+Step 1: Open the Application
+Go to: https://you-tube-party-system.vercel.app
+
+Step 2: Enter Your Name
+Type your name in the "Your Good Name" field.
+
+Step 3: Create a Room (As Host)
+Click "Create New Party" button
+
+A unique Room Code will be generated (e.g., ROOM-ABC12345)
+
+Copy this Room Code to share with friends
+
+Step 4: Join a Room (As Participant)
+Open the same URL in another browser tab or incognito window
+
+Enter a different name
+
+Paste the Room Code in "Please Enter Room code" field
+
+Click "Join Party" button
+
+Step 5: Watch Together
+Host controls the video (Play, Pause, Seek, Change Video)
+
+Participant watches the synced video automatically
+
+Chat with each other using the chat box
+
+Host can make a participant Moderator to give them control
+
+Step 6: Role Management (Host Only)
+Click "Make Moderator" next to any participant to give them control
+
+Click "Demote" to remove moderator privileges
+
+Click "Remove" to remove a participant from the room
+
+ Note
+
+The backend is hosted on **Render Free Tier**. Due to free tier limitations:
+- Server goes to **sleep** after 15 minutes of inactivity
+- First request after sleep takes **40-50 seconds** to wake up
+- Subsequent requests work normally
